@@ -1,0 +1,49 @@
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vanessa Eugenio
+-- Create date: 27/09/2022
+-- Description:	Essa procedure faz o recalculo geral de todos os vencimentos 
+-- =============================================
+CREATE PROCEDURE ES_RecGeral
+
+
+AS
+BEGIN
+
+declare @t table(ID int)
+
+insert into @t(ID)
+		
+-- Consulta com os registros que serão trabalhados
+---------------------------------------------------------------------------------------------------------------
+select ID
+from ES_CadPessoas..Pessoa p(nolock)
+
+---------------------------------------------------------------------------------------------------------------
+
+declare @Pessoa int
+
+declare Cdata cursor for
+	select ID from @t 
+open Cdata
+	fetch next from Cdata into @Pessoa
+while @@fetch_status != -1 
+begin
+
+
+exec ES_CadPessoas..ES_CCarSalario @Pessoa
+
+
+fetch next from Cdata into @Pessoa
+end
+close Cdata
+deallocate Cdata
+
+
+
+END
+

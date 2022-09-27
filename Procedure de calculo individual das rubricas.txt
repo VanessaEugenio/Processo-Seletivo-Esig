@@ -1,0 +1,72 @@
+USE [ES_CadPessoas]
+GO
+/****** Object:  StoredProcedure [dbo].[ES_CCarSalario]    Script Date: 27/09/2022 19:22:36 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vanessa Eugenio
+-- Create date: 27/09/2022
+-- Description:	Procedure que executa o calculo dos vencimentos para cada funcionário de forma individual
+-- =============================================
+ALTER PROCEDURE [dbo].[ES_CCarSalario]
+
+@Pessoa_ID int
+
+AS
+BEGIN
+
+declare 
+
+@VB float,
+@VD float
+
+DELETE FROM ES_CadPessoas..Salarios WHERE Pessoa_ID = @Pessoa_ID
+
+set @VB = 
+(
+select sum(
+	case when cv.Vencimento_ID in (1,2,3,4,5,6,7) then 
+		v.Valor
+		else 0 end) as 'vlbruto'
+
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+where p.id= @Pessoa_ID
+)
+
+set @VD = 
+(
+select sum(
+	case when cv.Vencimento_ID in (8) then 
+		v.Valor
+		when cv.Vencimento_ID in (9) then 
+			(v.Valor/100) * @VB 
+		else 0 end) as vldesc
+
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+where p.id= @Pessoa_ID
+)
+
+insert into ES_CadPessoas..Salarios (Pessoa_ID,Nome,Salario_Bruto,Descontos,Salario_Liquido)
+
+
+select p.ID, p.nome, @VB as 'Salario_Bruto',@VD as 'Descontos',(@VB-@VD) as 'Salario_Liquido'
+
+
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+	where p.id= @Pessoa_ID
+group by p.id, p.nome, p.Cargo_ID, c.Nome
+
+ 
+END
+

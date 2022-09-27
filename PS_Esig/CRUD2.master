@@ -1,0 +1,78 @@
+﻿<%@ Master Language="C#"  AutoEventWireup="true" CodeBehind="CRUD2.master.cs" Inherits="PS_Esig.CRUD2" %>
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+
+    <style type="text/css">
+        html {
+            background-color: silver;
+        }
+
+        .column {
+            float: left;
+            width: 150px;
+            border: solid 0px black;
+            margin-right: 25px;
+            padding: 0px;
+            background-color: grey;
+            min-height: 768px;
+            max-height: 2048px;
+        }
+
+        .column1 {
+            float: initial;
+            width: contain;
+            border: solid 0px black;
+            margin-left: 155px;
+            padding: 5px;
+            background-color: white;
+            min-height: 50px;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+
+    <div class="column">
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+
+        </asp:ContentPlaceHolder>
+    </div>
+    <div class="column1">
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder2" runat="server">
+        
+            
+           
+
+        </asp:ContentPlaceHolder>
+    </div>
+
+    <asp:Panel ID="pnlFiltros" runat="server" CssClass="well" ClientIDMode="Static">
+        <asp:ContentPlaceHolder ID="cphFiltros" runat="server"></asp:ContentPlaceHolder>
+        <asp:ContentPlaceHolder ID="cphGrid" runat="server"></asp:ContentPlaceHolder>
+        <asp:ContentPlaceHolder ID="cphBody" runat="server"></asp:ContentPlaceHolder>
+    </asp:Panel>
+
+    
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+

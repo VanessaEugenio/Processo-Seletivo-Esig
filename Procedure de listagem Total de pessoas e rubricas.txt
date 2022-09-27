@@ -1,0 +1,26 @@
+USE [ES_CadPessoas]
+GO
+/****** Object:  StoredProcedure [dbo].[ES_CPSalario]    Script Date: 27/09/2022 19:21:23 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vanessa Eugenio
+-- Create date: 27/09/2022
+-- Description:	procedure que realiza a listagem dos funcionários com suas rubricas
+-- =============================================
+ALTER PROCEDURE [dbo].[ES_CPSalario]
+
+
+AS
+BEGIN
+select p.id as 'Pessoa_ID', p.Nome, isnull(s.Salario_Bruto,0) as 'Salario_Bruto',isnull(s.Descontos,0) as 'Descontos',isnull(s.Salario_Liquido,0) as 'Salario_Liquido'
+from ES_CadPessoas..Pessoa p
+left join ES_CadPessoas..Salarios s on s.Pessoa_ID = p.ID
+order by Pessoa_ID desc
+
+END
+
+
+

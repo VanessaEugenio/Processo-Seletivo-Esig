@@ -1,0 +1,63 @@
+USE [ES_CadPessoas]
+GO
+/****** Object:  StoredProcedure [dbo].[ES_RelFinanCSalario]    Script Date: 27/09/2022 19:19:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vanessa Eugenio
+-- Create date: 27/09/2022
+-- Description:	Procedure que retorna os dados para gerar o contra-cheque de cada funcionário
+-- =============================================
+ALTER PROCEDURE [dbo].[ES_RelFinanCSalario]
+	@Pessoa_ID int
+AS
+BEGIN
+	declare
+	@VB float,
+@VD float
+
+set @VB = 
+(
+select sum(
+	case when cv.Vencimento_ID in (1,2,3,4,5,6,7) then 
+		v.Valor
+		else 0 end) as 'vlbruto'
+
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+where p.id= @Pessoa_ID
+)
+
+set @VD = 
+(
+select sum(
+	case when cv.Vencimento_ID in (8) then 
+		v.Valor
+		when cv.Vencimento_ID in (9) then 
+			(v.Valor/100) * 200 
+		else 0 end) as 'vldesc'
+
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+where p.id= 3009
+)
+
+select v.Id, v.Descricao,V.Valor, p.nome,c.Nome as 'Cargo', p.Data_Nascimento, @VB as 'Salario_Bruto',
+case when v.ID = 8 then v.Valor
+    when v.ID = 9 then  @VB * 0.11 
+else 0 end as 'Descontos', (@VB-@VD) as 'Salario_Liquido'
+from ES_CadPessoas..Pessoa p 
+	inner join	ES_CadPessoas..Cargo c on c.ID = p.Cargo_ID
+	inner join ES_CadPessoas..Cargo_Vencimentos cv on cv.Cargo_ID = p.Cargo_ID
+	inner join ES_CadPessoas..Vencimentos V on V.ID = CV.Vencimento_ID
+	where p.id= @Pessoa_ID
+
+	group by  v.Id, v.Descricao,V.Valor, p.nome,c.Nome , p.Data_Nascimento
+END
+
